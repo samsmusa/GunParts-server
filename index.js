@@ -177,6 +177,18 @@ async function run() {
 
     // reviews
 
+
+    app.post("/review/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+
+      console.log("review post");
+      const query = { _id: ObjectId(id) };
+      const deleteProduct = await reviewCollection~.deleteOne(query);
+      if (deleteProduct.acknowledged) {
+        res.send({ status: "success" });
+      }
+    });
+
     app.post("/review",verifyJWT, async (req, res) => {
       const postReview = req.body;
       
