@@ -14,11 +14,10 @@ app.use(express.json());
 //  verify jwt
 
 function verifyJWT(req, res, next) {
-
   const authHeader = req.headers.authorization;
-  console.log(authHeader)
+  console.log(authHeader);
   if (!authHeader) {
-    console.log('acces')
+    console.log("acces");
     return res.status(401).send({ message: "UnAuthorized access" });
   }
   const token = authHeader;
@@ -74,7 +73,6 @@ async function run() {
 
     // users
     app.get("/user/:email", async (req, res) => {
-      
       console.log("user get");
       const email = req.params.email;
       const query = { email: email };
@@ -86,9 +84,9 @@ async function run() {
       }
     });
 
-    app.get("/user",verifyJWT, async (req, res) => {
+    app.get("/user", verifyJWT, async (req, res) => {
       const user = await userCollection.find();
-      
+
       console.log("users get");
       const result = await user.toArray();
       if (result) {
@@ -100,7 +98,7 @@ async function run() {
 
     app.put("/user", async (req, res) => {
       const newUser = req.body;
-      
+
       console.log("user put");
       const query = { email: newUser.email };
       const user = await userCollection.updateOne(
@@ -117,9 +115,9 @@ async function run() {
 
     // orders
 
-    app.put("/order",verifyJWT, async (req, res) => {
+    app.put("/order", verifyJWT, async (req, res) => {
       const { _id, ...updateOrder } = req.body;
-      
+
       console.log("order put");
       const query = { _id: ObjectId(_id) };
       const updated = await orderCollection.updateOne(
@@ -128,12 +126,12 @@ async function run() {
         { upsert: true } // add document with req.body._id if not exists
       );
       const cursor = await orderCollection.findOne(query);
-      res.send({status:'success', data:cursor});
+      res.send({ status: "success", data: cursor });
     });
 
-    app.post("/order",verifyJWT, async (req, res) => {
+    app.post("/order", verifyJWT, async (req, res) => {
       const product = req.body;
-      
+
       console.log("order post");
       const order = await orderCollection.insertOne(product);
       if (order.acknowledged) {
@@ -147,9 +145,8 @@ async function run() {
       }
     });
 
-
     app.get("/orders", verifyJWT, async (req, res) => {
-      console.log('order get')
+      console.log("order get");
       const email = req.query.email;
       const status = req.query.status;
       let query = {};
@@ -168,7 +165,7 @@ async function run() {
 
     app.get("/order/:id", async (req, res) => {
       const id = req.params.id;
-      
+
       console.log("order id get");
       const query = { _id: ObjectId(id) };
       const cursor = await orderCollection.findOne(query);
@@ -177,21 +174,20 @@ async function run() {
 
     // reviews
 
-
     app.post("/review/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
 
       console.log("review post");
       const query = { _id: ObjectId(id) };
-      const deleteProduct = await reviewCollection~.deleteOne(query);
+      const deleteProduct = await reviewCollection.deleteOne(query);
       if (deleteProduct.acknowledged) {
         res.send({ status: "success" });
       }
     });
 
-    app.post("/review",verifyJWT, async (req, res) => {
+    app.post("/review", verifyJWT, async (req, res) => {
       const postReview = req.body;
-      
+
       console.log("review post]");
       const review = await reviewCollection.insertOne(postReview);
       if (review.acknowledged) {
@@ -207,7 +203,7 @@ async function run() {
 
     app.get("/reviews", async (req, res) => {
       const product = req.query.product;
-      
+
       console.log("reviews get");
       const email = req.query.email;
       let query = {};
@@ -226,9 +222,9 @@ async function run() {
 
     // products complete
 
-    app.put("/product",verifyJWT, async (req, res) => {
+    app.put("/product", verifyJWT, async (req, res) => {
       const { _id, ...updateProduct } = req.body;
-      
+
       console.log("product put");
       const query = { _id: ObjectId(_id) };
       const updated = await serviceCollection.updateOne(
@@ -241,9 +237,9 @@ async function run() {
     });
 
     // delete
-    app.post("/product/:id",verifyJWT, async (req, res) => {
+    app.post("/product/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
-      
+
       console.log("product post");
       const query = { _id: ObjectId(id) };
       const deleteProduct = await serviceCollection.deleteOne(query);
@@ -254,7 +250,7 @@ async function run() {
 
     app.get("/products", async (req, res) => {
       const parts = req.query.parts;
-      
+
       console.log("products get");
       let query = {};
       if (parts) {
@@ -268,7 +264,7 @@ async function run() {
 
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
-      console.log('produc get')
+      console.log("produc get");
       const query = { _id: ObjectId(id) };
       const cursor = await serviceCollection.findOne(query);
       res.send(cursor);
