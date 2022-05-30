@@ -5,8 +5,10 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 const app = express();
-const crypto = require("crypto");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const Stripe = require("stripe");
+const stripe = Stripe(
+  "sk_test_51L3OIOBhVNHGopJmVqOY4zhkk5u8fzTvP4jaSzlKt6sU7bmuEs954fRzF12OdspX0wl4JaEvXYpcOHAZP2BwaUD300jN2k85jT"
+);
 
 //middleware
 app.use(cors());
@@ -257,7 +259,7 @@ async function run() {
         query = { partsType: parts };
       }
 
-      const cursor = await serviceCollection.find(query);
+      const cursor = await serviceCollection.find(query).sort({ _id: -1 });
       const userProduct = await cursor.toArray();
       res.send(userProduct);
     });
